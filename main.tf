@@ -1,5 +1,5 @@
 # Resource - Resource group creation
-resource "azurerm_resource_group" "Rg2" {
+resource "azurerm_resource_group" "Rg1" {
   name     = var.azurerm_resource_group          #calling to variables file
   location = var.azurerm_resource_group_location #calling to variables file
 }
@@ -8,21 +8,21 @@ resource "azurerm_resource_group" "Rg2" {
 resource "azurerm_virtual_network" "main" {
   name                = "${var.prefix}-network"
   address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.Rg2.location
-  resource_group_name = azurerm_resource_group.Rg2.name
+  location            = azurerm_resource_group.Rg1.location
+  resource_group_name = azurerm_resource_group.Rg1.name
 }
 # Resource - Subnet creation
 resource "azurerm_subnet" "internal" {
   name                 = "internal"
-  resource_group_name  = azurerm_resource_group.Rg2.name
+  resource_group_name  = azurerm_resource_group.Rg1.name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefixes     = ["10.0.2.0/24"]
 }
 #Resource - Interface creation which required for VM to communicate
 resource "azurerm_network_interface" "main" {
   name                = "${var.prefix}-nic"
-  location            = azurerm_resource_group.Rg2.location
-  resource_group_name = azurerm_resource_group.Rg2.name
+  location            = azurerm_resource_group.Rg1.location
+  resource_group_name = azurerm_resource_group.Rg1.name
 
   ip_configuration {
     name                          = "testconfiguration1"
@@ -33,8 +33,8 @@ resource "azurerm_network_interface" "main" {
 # Resource - creation of VM
 resource "azurerm_virtual_machine" "main" {
   name                  = "${var.prefix}-vm"
-  location              = azurerm_resource_group.Rg2.location
-  resource_group_name   = azurerm_resource_group.Rg2.name
+  location              = azurerm_resource_group.Rg1.location
+  resource_group_name   = azurerm_resource_group.Rg1.name
   network_interface_ids = [azurerm_network_interface.main.id]
   vm_size               = "Standard_DS1_v2"
 
